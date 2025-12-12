@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test WhatsApp Connection</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; }
+        .log { background: #f0f0f0; padding: 20px; border-radius: 5px; min-height: 300px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; font-size: 12px; margin-bottom: 20px; }
+        button { padding: 10px 20px; margin: 5px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #764ba2; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🧪 WhatsApp Connection Test</h1>
+    <button onclick="testLogin()">1️⃣ Test Login</button>
+    <button onclick="testDebugToken()">2️⃣ Test Debug Token</button>
+    <button onclick="testConnect()">3️⃣ Test WhatsApp Connect</button>
+    <button onclick="clearLog()">🗑️ Clear Log</button>
+    
+    <div id="log" class="log"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        let token = null;
+
+        function log(msg, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${msg}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function testLogin() {
+            log('🔐 Testing Login...');
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    token = data.token.trim();
+                    log(`✅ Login successful!`, 'success');
+                    log(`Token: ${token.substring(0, 50)}...`);
+                    log(`User: ${data.user.username}`);
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                } else {
+                    log(`❌ Login failed: ${data.error}`, 'error');
+                }
+            } catch (err) {
+                log(`❌ Login error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testDebugToken() {
+            log('🔍 Testing Debug Token...');
+            
+            if (!token && !localStorage.getItem('token')) {
+                log('❌ No token found. Please login first.', 'error');
+                return;
+            }
+
+            token = token || localStorage.getItem('token');
+            log(`Using token: ${token.substring(0, 50)}...`);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/debug/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    log(`✅ Token verified!`, 'success');
+                    log(`UserId: ${data.decoded.userId}`);
+                    log(`Username: ${data.decoded.username}`);
+                } else {
+                    log(`❌ Token error: ${data.error}`, 'error');
+                    log(`Response: ${JSON.stringify(data)}`);
+                }
+            } catch (err) {
+                log(`❌ Debug error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testConnect() {
+            log('📱 Testing WhatsApp Connection...');
+            
+            if (!token && !localStorage.getItem('token')) {
+                log('❌ No token found. Please login first.', 'error');
+                return;
+            }
+
+            token = token || localStorage.getItem('token');
+            log(`Using token: ${token.substring(0, 50)}...`);
+
+            try {
+                log('Sending connect request...');
+                const response = await fetch(`${API_BASE}/api/whatsapp/connect`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                log(`Response status: ${response.status}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`❌ Server error: ${errorText.substring(0, 200)}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.qrCode || data.qr) {
+                    log(`✅ QR Code received!`, 'success');
+                    log(`QR Code: ${(data.qrCode || data.qr).substring(0, 100)}...`);
+                    log('📱 Use this QR code in your WhatsApp app');
+                } else if (data.error) {
+                    log(`❌ Error: ${data.error}`, 'error');
+                } else {
+                    log(`⚠️ Unexpected response: ${JSON.stringify(data).substring(0, 200)}`);
+                }
+            } catch (err) {
+                log(`❌ Connect error: ${err.message}`, 'error');
+            }
+        }
+
+        // Auto-login on page load
+        window.onload = () => {
+            log('🚀 Test page loaded');
+            log('Click buttons to test the system');
+        };
+    </script>
+</body>
+</html>

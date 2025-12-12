@@ -1,0 +1,59 @@
+# Ignore dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# WhatsApp Sessions (IMPORTANT - contains sensitive data)
+whatsapp-sessions/
+WhatsApp_Client_Ready/
+WhatsApp_Automation_Client/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database.sqlite
+
+# ZIP files
+*.zip
+
+# Executables
+*.exe
+
+# PDF files (sample data)
+pdfs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+/build
+/dist
+/out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# React
+/frontend/build
+/frontend/.eslintcache
+
+# Uploads
+/backend-uploads
+/backend/uploads
+/uploads
+
+# Logs
+logs/
+*.log
+
+# Cache
+.cache

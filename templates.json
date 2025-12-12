@@ -1,0 +1,7 @@
+[
+  "Hello {{name}}, your report is ready. Please check the attached PDF.",
+  "Hi {{name}} — your test report has arrived. Open the PDF to view results.",
+  "Dear {{name}}, we've uploaded your medical report. Please find the attached document.",
+  "Hello! This is to inform you that your report for recent tests is ready, {{name}}. PDF attached.",
+  "Good day {{name}} — your report is now available. Kindly download the attached file."
+]

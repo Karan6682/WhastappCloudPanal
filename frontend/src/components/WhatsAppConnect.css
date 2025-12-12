@@ -1,0 +1,157 @@
+.whatsapp-connect-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.connect-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.connect-card h2 {
+  color: #667eea;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+}
+
+.connection-success {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.success-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.connection-success h3 {
+  color: #28a745;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.phone-info {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.btn-disconnect {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.btn-disconnect:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+.qr-section {
+  text-align: center;
+}
+
+.instruction {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.qr-code {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.qr-code img {
+  width: 300px;
+  height: 300px;
+  border: 3px solid #667eea;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.loading {
+  color: #667eea;
+  font-size: 16px;
+  padding: 40px;
+}
+
+.hint {
+  color: #999;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.connect-form {
+  text-align: center;
+}
+
+.description {
+  color: #667eea;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.info {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.btn-start:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-start:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c00;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c00;
+}

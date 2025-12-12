@@ -1,0 +1,104 @@
+.dashboard {
+  margin-left: 250px;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.dashboard-charts {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 3rem;
+}
+
+.recent-campaigns {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.recent-campaigns h2 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+}
+
+.campaigns-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.campaigns-table th {
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 2px solid #eee;
+  font-weight: 600;
+  color: #666;
+}
+
+.campaigns-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.campaigns-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.status-draft {
+  padding: 0.4rem 0.8rem;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-active {
+  padding: 0.4rem 0.8rem;
+  background: #d1ecf1;
+  color: #0c5460;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-completed {
+  padding: 0.4rem 0.8rem;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.dashboard-loading {
+  margin-left: 250px;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+  text-align: center;
+}

@@ -1,0 +1,26 @@
+{
+  "name": "whatsapp-automation-baileys",
+  "version": "1.0.0",
+  "description": "Multi-client safe WhatsApp automation with Baileys. Random templates + PDF send + rate limiter + session save",
+  "main": "backend/server-simple.js",
+  "scripts": {
+    "start": "node backend/server-simple.js",
+    "start:backend": "node backend/server-simple.js",
+    "dev": "node backend/server-simple.js"
+  },
+  "dependencies": {
+    "@adiwajshing/baileys": "^5.0.0",
+    "@whiskeysockets/baileys": "^6.6.0",
+    "csv-parse": "^5.0.0",
+    "express": "^5.2.1",
+    "fs-extra": "^11.0.0",
+    "multer": "^2.0.2",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "sql.js": "^1.13.0"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}

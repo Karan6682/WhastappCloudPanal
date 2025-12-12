@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp API Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--primary:#00a884;--primary-dark:#008069;--bg-dark:#111b21;--bg-card:#1f2c34;--bg-input:#2a3942;--text-primary:#e9edef;--text-secondary:#8696a0;--border-color:#2a3942;--danger:#f15c6d;--success:#00a884;--warning:#ffd43b;--code-bg:#0d1117}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg-dark);color:var(--text-primary);line-height:1.6}
+        .container{max-width:1200px;margin:0 auto;padding:20px}
+        .header{text-align:center;padding:40px 20px;background:linear-gradient(135deg,var(--primary-dark),var(--primary));margin-bottom:30px;border-radius:15px}
+        .header h1{font-size:28px;margin-bottom:10px}
+        .header p{color:rgba(255,255,255,0.9);font-size:14px}
+        .api-key-box{background:var(--bg-card);padding:20px;border-radius:10px;margin-bottom:30px;border:1px solid var(--border-color)}
+        .api-key-box h3{color:var(--primary);margin-bottom:15px}
+        .api-key{background:var(--code-bg);padding:15px;border-radius:8px;font-family:monospace;display:flex;align-items:center;justify-content:space-between}
+        .api-key code{color:var(--warning)}
+        .api-key button{background:var(--primary);border:none;color:white;padding:8px 15px;border-radius:5px;cursor:pointer}
+        .endpoint{background:var(--bg-card);border-radius:10px;margin-bottom:20px;border:1px solid var(--border-color);overflow:hidden}
+        .endpoint-header{padding:20px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:15px}
+        .method{padding:6px 12px;border-radius:5px;font-weight:600;font-size:12px}
+        .method.post{background:#49cc90;color:#1b4332}
+        .method.get{background:#61affe;color:#1a365d}
+        .endpoint-path{font-family:monospace;font-size:16px;color:var(--primary)}
+        .endpoint-desc{color:var(--text-secondary);font-size:14px;margin-left:auto}
+        .endpoint-body{padding:20px}
+        .section-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;margin-bottom:10px;letter-spacing:1px}
+        .code-block{background:var(--code-bg);padding:15px;border-radius:8px;overflow-x:auto;margin-bottom:15px}
+        .code-block pre{font-family:monospace;font-size:13px;color:#e6edf3;white-space:pre-wrap;word-break:break-all}
+        .code-block .key{color:#7ee787}
+        .code-block .string{color:#a5d6ff}
+        .code-block .comment{color:#8b949e}
+        .tabs{display:flex;gap:5px;margin-bottom:15px}
+        .tab{padding:8px 16px;background:var(--bg-input);border:none;color:var(--text-secondary);cursor:pointer;border-radius:5px;font-size:13px}
+        .tab.active{background:var(--primary);color:white}
+        .response{margin-top:20px}
+        .response-success{border-left:3px solid var(--success);padding-left:15px}
+        .response-error{border-left:3px solid var(--danger);padding-left:15px}
+        .try-it{margin-top:20px;padding-top:20px;border-top:1px solid var(--border-color)}
+        .try-it h4{color:var(--primary);margin-bottom:15px}
+        .form-row{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:10px;align-items:center}
+        .form-row label{font-size:13px;color:var(--text-secondary)}
+        .form-row input,.form-row textarea{padding:10px;border:1px solid var(--border-color);border-radius:5px;background:var(--bg-input);color:var(--text-primary);font-family:inherit}
+        .form-row textarea{min-height:80px;resize:vertical}
+        .btn{padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s}
+        .btn-primary{background:var(--primary);color:white}
+        .btn-primary:hover{background:var(--primary-dark)}
+        .result-box{margin-top:15px;background:var(--code-bg);padding:15px;border-radius:8px;display:none}
+        .result-box.show{display:block}
+        .result-box pre{font-family:monospace;font-size:13px;white-space:pre-wrap}
+        .notes{background:var(--bg-card);padding:20px;border-radius:10px;margin-top:30px}
+        .notes h3{color:var(--primary);margin-bottom:15px}
+        .notes ul{padding-left:20px}
+        .notes li{margin-bottom:8px;color:var(--text-secondary)}
+        .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--primary);text-decoration:none;margin-bottom:20px}
+        .back-link:hover{text-decoration:underline}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/app.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <div class="header">
+            <h1><i class="fab fa-whatsapp"></i> WhatsApp Business API</h1>
+            <p>External API / Webhook Documentation</p>
+        </div>
+        
+        <div class="api-key-box">
+            <h3><i class="fas fa-key"></i> Your API Key</h3>
+            <div class="api-key">
+                <code id="apiKeyDisplay">Loading...</code>
+                <button onclick="copyApiKey()"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-secondary)">Use this key in the <code>X-API-Key</code> header for all requests</p>
+        </div>
+        
+        <!-- Send Message Endpoint -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method post">POST</span>
+                <span class="endpoint-path">/webhook/send-message</span>
+                <span class="endpoint-desc">Send text message</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section-title">Request Body (JSON)</div>
+                <div class="code-block">
+<pre>{
+  <span class="key">"phone"</span>: <span class="string">"918683916682"</span>,    <span class="comment">// Required - with country code</span>
+  <span class="key">"message"</span>: <span class="string">"Hello from API!"</span>, <span class="comment">// Required</span>
+  <span class="key">"session"</span>: <span class="string">"admin"</span>           <span class="comment">// Optional - default: admin</span>
+}</pre>
+                </div>
+                
+                <div class="section-title">cURL Example</div>
+                <div class="code-block">
+<pre>curl -X POST http://localhost:3001/webhook/send-message \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"918683916682","message":"Hello from API!"}'</pre>
+                </div>
+                
+                <div class="response">
+                    <div class="section-title">Success Response</div>
+                    <div class="response-success">
+                        <div class="code-block">
+<pre>{
+  <span class="key">"success"</span>: true,
+  <span class="key">"message"</span>: <span class="string">"Message sent successfully"</span>,
+  <span class="key">"phone"</span>: <span class="string">"918683916682"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2024-12-11T10:30:00.000Z"</span>
+}</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="try-it">
+                    <h4><i class="fas fa-play"></i> Try It</h4>
+                    <div class="form-row">
+                        <label>Phone:</label>
+                        <input type="text" id="tryPhone1" placeholder="918683916682">
+                    </div>
+                    <div class="form-row">
+                        <label>Message:</label>
+                        <textarea id="tryMessage1" placeholder="Hello from API!"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="trySendMessage()"><i class="fas fa-paper-plane"></i> Send Request</button>
+                    <div class="result-box" id="result1"><pre></pre></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send PDF Endpoint -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method post">POST</span>
+                <span class="endpoint-path">/webhook/send-pdf</span>
+                <span class="endpoint-desc">Send PDF document</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section-title">Request (multipart/form-data)</div>
+                <div class="code-block">
+<pre>phone: 918683916682     <span class="comment">// Required</span>
+pdf: [file]             <span class="comment">// Required - PDF file</span>
+caption: Your document  <span class="comment">// Optional</span>
+session: admin          <span class="comment">// Optional</span></pre>
+                </div>
+                
+                <div class="section-title">cURL Example</div>
+                <div class="code-block">
+<pre>curl -X POST http://localhost:3001/webhook/send-pdf \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "phone=918683916682" \
+  -F "pdf=@/path/to/document.pdf" \
+  -F "caption=Here is your file"</pre>
+                </div>
+                
+                <div class="try-it">
+                    <h4><i class="fas fa-play"></i> Try It</h4>
+                    <div class="form-row">
+                        <label>Phone:</label>
+                        <input type="text" id="tryPhone2" placeholder="918683916682">
+                    </div>
+                    <div class="form-row">
+                        <label>PDF File:</label>
+                        <input type="file" id="tryPdf2" accept=".pdf">
+                    </div>
+                    <div class="form-row">
+                        <label>Caption:</label>
+                        <input type="text" id="tryCaption2" placeholder="Here is your document">
+                    </div>
+                    <button class="btn btn-primary" onclick="trySendPdf()"><i class="fas fa-file-pdf"></i> Send PDF</button>
+                    <div class="result-box" id="result2"><pre></pre></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send Bulk Endpoint -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method post">POST</span>
+                <span class="endpoint-path">/webhook/send-bulk</span>
+                <span class="endpoint-desc">Send bulk messages</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section-title">Request Body (JSON)</div>
+                <div class="code-block">
+<pre>{
+  <span class="key">"phones"</span>: [<span class="string">"918683916682"</span>, <span class="string">"919876543210"</span>],
+  <span class="key">"message"</span>: <span class="string">"Bulk message to all!"</span>,
+  <span class="key">"session"</span>: <span class="string">"admin"</span>
+}</pre>
+                </div>
+                <p style="color:var(--warning);font-size:13px;margin-top:10px">
+                    <i class="fas fa-info-circle"></i> Messages are sent with 36-48 second delays to prevent WhatsApp blocking
+                </p>
+            </div>
+        </div>
+        
+        <!-- Status Endpoint -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method get">GET</span>
+                <span class="endpoint-path">/webhook/status</span>
+                <span class="endpoint-desc">Check connection status</span>
+            </div>
+            <div class="endpoint-body">
+                <div class="section-title">Query Parameters</div>
+                <div class="code-block">
+<pre>session: admin  <span class="comment">// Optional - default: admin</span></pre>
+                </div>
+                
+                <div class="section-title">cURL Example</div>
+                <div class="code-block">
+<pre>curl -X GET "http://localhost:3001/webhook/status?session=admin" \
+  -H "X-API-Key: YOUR_API_KEY"</pre>
+                </div>
+                
+                <div class="try-it">
+                    <h4><i class="fas fa-play"></i> Try It</h4>
+                    <button class="btn btn-primary" onclick="tryStatus()"><i class="fas fa-wifi"></i> Check Status</button>
+                    <div class="result-box" id="result3"><pre></pre></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes">
+            <h3><i class="fas fa-lightbulb"></i> Important Notes</h3>
+            <ul>
+                <li>All endpoints require <code>X-API-Key</code> header or <code>api_key</code> query parameter</li>
+                <li>Phone numbers must include country code (e.g., 91 for India)</li>
+                <li>WhatsApp must be connected before sending messages</li>
+                <li>Bulk messages include automatic delays to prevent blocking</li>
+                <li>PDF files must be sent as <code>multipart/form-data</code></li>
+                <li>Maximum file size: 50MB</li>
+                <li>All webhook activity is logged with username "webhook"</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        var API = 'http://localhost:3001';
+        var API_KEY = '';
+        
+        // Load config
+        fetch(API + '/webhook/info')
+            .then(r => r.json())
+            .then(data => {
+                // API key needs to be fetched from config endpoint
+                fetch(API + '/api/config')
+                    .then(r => r.json())
+                    .then(cfg => {
+                        // We don't expose API key in /api/config for security
+                        // User needs to check config.js or server logs
+                        document.getElementById('apiKeyDisplay').textContent = 'Check config.js or server startup logs';
+                    });
+            });
+        
+        function copyApiKey() {
+            var key = document.getElementById('apiKeyDisplay').textContent;
+            navigator.clipboard.writeText(key);
+            alert('API Key copied!');
+        }
+        
+        async function trySendMessage() {
+            var phone = document.getElementById('tryPhone1').value;
+            var message = document.getElementById('tryMessage1').value;
+            var apiKey = prompt('Enter your API Key:');
+            
+            if (!apiKey) return;
+            
+            var resultBox = document.getElementById('result1');
+            resultBox.classList.add('show');
+            resultBox.querySelector('pre').textContent = 'Sending...';
+            
+            try {
+                var resp = await fetch(API + '/webhook/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': apiKey
+                    },
+                    body: JSON.stringify({ phone, message })
+                });
+                var data = await resp.json();
+                resultBox.querySelector('pre').textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                resultBox.querySelector('pre').textContent = 'Error: ' + e.message;
+            }
+        }
+        
+        async function trySendPdf() {
+            var phone = document.getElementById('tryPhone2').value;
+            var file = document.getElementById('tryPdf2').files[0];
+            var caption = document.getElementById('tryCaption2').value;
+            var apiKey = prompt('Enter your API Key:');
+            
+            if (!apiKey || !file) {
+                alert('API Key and PDF file required');
+                return;
+            }
+            
+            var resultBox = document.getElementById('result2');
+            resultBox.classList.add('show');
+            resultBox.querySelector('pre').textContent = 'Sending PDF...';
+            
+            var formData = new FormData();
+            formData.append('phone', phone);
+            formData.append('pdf', file);
+            formData.append('caption', caption);
+            
+            try {
+                var resp = await fetch(API + '/webhook/send-pdf', {
+                    method: 'POST',
+                    headers: { 'X-API-Key': apiKey },
+                    body: formData
+                });
+                var data = await resp.json();
+                resultBox.querySelector('pre').textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                resultBox.querySelector('pre').textContent = 'Error: ' + e.message;
+            }
+        }
+        
+        async function tryStatus() {
+            var apiKey = prompt('Enter your API Key:');
+            if (!apiKey) return;
+            
+            var resultBox = document.getElementById('result3');
+            resultBox.classList.add('show');
+            resultBox.querySelector('pre').textContent = 'Checking...';
+            
+            try {
+                var resp = await fetch(API + '/webhook/status', {
+                    headers: { 'X-API-Key': apiKey }
+                });
+                var data = await resp.json();
+                resultBox.querySelector('pre').textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                resultBox.querySelector('pre').textContent = 'Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

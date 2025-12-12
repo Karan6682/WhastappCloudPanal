@@ -1,0 +1,141 @@
+.logs-page {
+  margin-left: 250px;
+  padding: 2rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #333;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filter-controls select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.logs-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.log-entry {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+
+.log-success {
+  background: #f0fdf4;
+  border-left-color: #48bb78;
+}
+
+.log-error {
+  background: #fef2f2;
+  border-left-color: #f56565;
+}
+
+.log-warning {
+  background: #fffbeb;
+  border-left-color: #ecc94b;
+}
+
+.log-info {
+  background: #eff6ff;
+  border-left-color: #4299e1;
+}
+
+.log-icon {
+  font-size: 1.5rem;
+  min-width: 30px;
+}
+
+.log-content {
+  flex: 1;
+}
+
+.log-message {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.log-metadata {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.log-tag {
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  color: #666;
+}
+
+.log-time {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.no-logs {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.page-info {
+  color: #666;
+  font-weight: 600;
+}
+
+.pagination .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}

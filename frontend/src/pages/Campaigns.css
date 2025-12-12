@@ -1,0 +1,178 @@
+.campaigns-page {
+  margin-left: 250px;
+  padding: 2rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #333;
+}
+
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.form-card h2 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.contacts-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.contact-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.contact-checkbox:hover {
+  background: #f5f5f5;
+}
+
+.contact-checkbox input {
+  margin-right: 0.75rem;
+  cursor: pointer;
+  width: auto;
+}
+
+.contact-checkbox span {
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.campaigns-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.campaigns-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.campaigns-table th {
+  background: #f9f9f9;
+  padding: 1.2rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #eee;
+}
+
+.campaigns-table td {
+  padding: 1.2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.campaigns-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.campaign-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.status-draft {
+  padding: 0.4rem 0.8rem;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-active {
+  padding: 0.4rem 0.8rem;
+  background: #d1ecf1;
+  color: #0c5460;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-completed {
+  padding: 0.4rem 0.8rem;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.success {
+  color: #48bb78;
+  font-weight: 600;
+}
+
+.error {
+  color: #f56565;
+  font-weight: 600;
+}
+
+.campaigns-table td:last-child {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
