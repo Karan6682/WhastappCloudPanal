@@ -137,19 +137,39 @@ async function start(){
       globalSent++;
       await saveStats(stats);
 
-      // if PDF specified and exists, send as document
+      // if file specified and exists, send as document (PDF) or image (JPG/PNG)
       if(contact.pdf && contact.pdf.trim()){
-        const pdfPath = path.join(PDF_FOLDER, contact.pdf.trim());
-        if(fs.existsSync(pdfPath)){
-          const buffer = fs.readFileSync(pdfPath);
-          await sleep(1000); // small pause before document
-          await sock.sendMessage(jid, { document: buffer, fileName: contact.pdf.trim(), mimetype: 'application/pdf', caption: 'Attached PDF report' });
-          console.log(`Sent PDF ${contact.pdf} to ${phone}`);
+        const fileName = contact.pdf.trim();
+        const filePath = path.join(PDF_FOLDER, fileName);
+        const ext = path.extname(fileName).toLowerCase();
+        
+        if(fs.existsSync(filePath)){
+          const buffer = fs.readFileSync(filePath);
+          await sleep(1000); // small pause before sending file
+          
+          if(ext === '.jpg' || ext === '.jpeg'){
+            // Send as image (JPG)
+            await sock.sendMessage(jid, { image: buffer, caption: 'Attached Image' });
+            console.log(`Sent JPG ${fileName} to ${phone}`);
+          } else if(ext === '.png'){
+            // Send as image (PNG)
+            await sock.sendMessage(jid, { image: buffer, caption: 'Attached Image' });
+            console.log(`Sent PNG ${fileName} to ${phone}`);
+          } else if(ext === '.pdf'){
+            // Send as PDF document
+            await sock.sendMessage(jid, { document: buffer, fileName: fileName, mimetype: 'application/pdf', caption: 'Attached PDF report' });
+            console.log(`Sent PDF ${fileName} to ${phone}`);
+          } else {
+            // Send as generic document
+            await sock.sendMessage(jid, { document: buffer, fileName: fileName, caption: 'Attached file' });
+            console.log(`Sent file ${fileName} to ${phone}`);
+          }
+          
           stats.daily_counts[jid] = (stats.daily_counts[jid]||0) + 1;
           globalSent++;
           await saveStats(stats);
         } else {
-          console.log(`PDF for ${phone} not found at ${pdfPath}, skipping PDF.`);
+          console.log(`File for ${phone} not found at ${filePath}, skipping file.`);
         }
       }
 

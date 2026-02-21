@@ -8,16 +8,37 @@ const path = require('path');
 module.exports = {
     // Server Configuration
     PORT: 3001,
-    HOST: 'localhost',
+    HOST: '0.0.0.0',
     
-    // API Base URL (for frontend)
+    // API Base URL (for frontend) - no trailing /api
     API_BASE_URL: 'http://localhost:3001',
     
-    // Database Configuration
+    // Database Configuration (SQLite - Local)
     DATABASE: {
         PATH: path.join(__dirname, '../database.sqlite'),
         NAME: 'database.sqlite'
     },
+    
+    /*
+    // MSSQL Database Configuration (Online SQL Server) - COMMENTED OUT
+    MSSQL: {
+        server: '160.250.204.51',
+        database: 'pathosta_BulkWhatsAppsBusinessDB',
+        user: 'pathosta_BulkWhatsAppsBusinessUser',
+        password: 'Nbfo9d4A$@fMyka6',
+        port: 1433, // MSSQL Server port
+        options: {
+            encrypt: false,
+            trustServerCertificate: true,
+            enableArithAbort: true
+        },
+        pool: {
+            max: 10,
+            min: 0,
+            idleTimeoutMillis: 30000
+        }
+    },
+    */
     
     // WhatsApp Configuration
     WHATSAPP: {
@@ -30,13 +51,13 @@ module.exports = {
     UPLOAD: {
         DIR: path.join(__dirname, '../uploads'),
         MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
-        ALLOWED_TYPES: ['application/pdf']
+        ALLOWED_TYPES: ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp']
     },
     
     // Default Admin Configuration
     DEFAULT_ADMIN: {
         USERNAME: 'admin',
-        PASSWORD: 'admin123',
+        PASSWORD: 'admin',
         MSG_LIMIT: 999999
     },
     

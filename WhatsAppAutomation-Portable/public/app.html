@@ -1,0 +1,517 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk WhatsApps Business Automation</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--primary:#00a884;--primary-dark:#008069;--bg-dark:#111b21;--bg-card:#1f2c34;--bg-input:#2a3942;--text-primary:#e9edef;--text-secondary:#8696a0;--border-color:#2a3942;--danger:#f15c6d;--success:#00a884;--warning:#ffd43b;--sidebar-width:280px}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg-dark);min-height:100vh;color:var(--text-primary)}
+        .app-wrapper{display:flex;min-height:100vh}
+        .sidebar{width:var(--sidebar-width);background:var(--bg-card);border-right:1px solid var(--border-color);display:flex;flex-direction:column;position:fixed;height:100vh;left:0;top:0;z-index:100}
+        .sidebar-header{background:linear-gradient(135deg,var(--primary-dark),var(--primary));padding:25px 20px;text-align:center}
+        .sidebar-logo{width:60px;height:60px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+        .sidebar-logo i{font-size:28px;color:white}
+        .sidebar-header h2{font-size:16px;font-weight:600;color:white;margin-bottom:3px}
+        .sidebar-header p{font-size:11px;color:#ffffffcc}
+        .nav-menu{flex:1;padding:15px 0;overflow-y:auto}
+        .nav-section{padding:10px 20px 5px;font-size:10px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;color:var(--text-secondary);transition:all 0.3s;border-left:3px solid transparent;font-size:14px}
+        .nav-item:hover{background:var(--bg-input);color:var(--text-primary)}
+        .nav-item.active{background:rgba(0,168,132,0.15);color:var(--primary);border-left-color:var(--primary)}
+        .nav-item i{width:20px;text-align:center;font-size:16px}
+        .sidebar-footer{padding:15px 20px;border-top:1px solid var(--border-color);background:var(--bg-dark)}
+        .user-profile{display:flex;align-items:center;gap:12px}
+        .user-avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:white}
+        .user-info{flex:1}
+        .user-info h4{font-size:13px;font-weight:600}
+        .user-info p{font-size:11px;color:var(--text-secondary)}
+        .logout-btn{background:none;border:none;color:var(--danger);cursor:pointer;padding:8px;border-radius:8px;transition:all 0.3s}
+        .logout-btn:hover{background:rgba(241,92,109,0.15)}
+        .main-content{flex:1;margin-left:var(--sidebar-width);min-height:100vh;display:flex;flex-direction:column}
+        .top-header{background:var(--bg-card);padding:18px 30px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between}
+        .page-title{display:flex;align-items:center;gap:12px}
+        .page-title i{font-size:20px;color:var(--primary)}
+        .page-title h1{font-size:18px;font-weight:600}
+        .connection-status{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:50px;font-size:12px;font-weight:600}
+        .connection-status .dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .connection-status.connected{background:rgba(0,168,132,0.15);color:var(--success)}
+        .connection-status.connected .dot{background:var(--success);animation:none}
+        .connection-status.disconnected{background:rgba(241,92,109,0.15);color:var(--danger)}
+        .connection-status.disconnected .dot{background:var(--danger);animation:none}
+        .connection-status.connecting{background:rgba(255,212,59,0.15);color:var(--warning)}
+        .connection-status.connecting .dot{background:var(--warning)}
+        .content-area{flex:1;padding:30px;background:var(--bg-dark);overflow-y:auto}
+        .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:25px}
+        .card{background:var(--bg-card);border-radius:16px;border:1px solid var(--border-color);overflow:hidden}
+        .card-header{padding:18px 20px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:12px}
+        .card-header i{color:var(--primary);font-size:18px}
+        .card-header h3{font-size:15px;font-weight:600}
+        .card-body{padding:20px}
+        .qr-card{text-align:center}
+        .session-input{margin-bottom:20px}
+        .session-input label{display:block;margin-bottom:8px;font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px}
+        .session-input input{width:100%;padding:12px 14px;border:2px solid var(--border-color);border-radius:10px;font-size:14px;background:var(--bg-input);color:var(--text-primary);transition:all 0.3s}
+        .session-input input:focus{outline:none;border-color:var(--primary)}
+        .qr-box{background:white;padding:20px;border-radius:15px;display:inline-block;box-shadow:0 10px 40px rgba(0,0,0,0.3);min-height:220px;min-width:220px;margin:20px 0}
+        .qr-box canvas,.qr-box img{display:block;margin:0 auto}
+        .qr-placeholder{color:#8696a0;padding:80px 20px;font-size:14px}
+        .qr-placeholder i{font-size:40px;display:block;margin-bottom:15px;color:#2a3942}
+        .btn{padding:14px 24px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;justify-content:center;gap:10px}
+        .btn:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,0,0,0.3)}
+        .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;width:100%}
+        .tabs{display:flex;margin-bottom:20px;background:var(--bg-dark);border-radius:10px;padding:5px;gap:5px}
+        .tab{flex:1;padding:12px 15px;cursor:pointer;border:none;background:transparent;font-size:13px;font-weight:600;color:var(--text-secondary);border-radius:8px;transition:all 0.3s}
+        .tab:hover{color:var(--text-primary)}
+        .tab.active{background:var(--primary);color:white}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .form-group{margin-bottom:18px}
+        .form-group label{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:500;color:var(--text-secondary);font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
+        .form-group input,.form-group textarea{width:100%;padding:14px 16px;border:2px solid var(--border-color);border-radius:10px;font-size:14px;background:var(--bg-input);color:var(--text-primary);transition:all 0.3s;font-family:inherit}
+        .form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);background:var(--bg-dark)}
+        .form-group input::placeholder,.form-group textarea::placeholder{color:var(--text-secondary)}
+        .file-input-wrapper{position:relative;overflow:hidden;display:inline-block;width:100%}
+        .file-input-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;cursor:pointer;width:100%;height:100%}
+        .file-input-btn{background:var(--bg-dark);border:2px dashed var(--border-color);padding:25px;text-align:center;border-radius:12px;cursor:pointer;transition:all 0.3s;color:var(--text-secondary);font-size:14px}
+        .file-input-btn:hover{border-color:var(--primary);background:rgba(0,168,132,0.05);color:var(--primary)}
+        .file-input-btn.has-file{border-color:var(--primary);border-style:solid;background:rgba(0,168,132,0.1);color:var(--primary)}
+        .alert{padding:12px 15px;border-radius:10px;margin-top:15px;display:none;font-size:14px;align-items:center;gap:10px}
+        .alert.show{display:flex}
+        .alert-success{background:rgba(0,168,132,0.15);color:var(--success);border:1px solid rgba(0,168,132,0.3)}
+        .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+        .login-container{background:var(--bg-card);border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,0.5);width:100%;max-width:420px;overflow:hidden;border:1px solid var(--border-color)}
+        .login-header{background:linear-gradient(135deg,var(--primary-dark),var(--primary));padding:35px;text-align:center}
+        .login-header .logo{width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px}
+        .login-header .logo i{font-size:38px;color:white}
+        .login-header h1{font-size:22px;font-weight:600;color:white}
+        .login-header p{color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px}
+        .login-body{padding:30px}
+        .login-error{background:rgba(241,92,109,0.15);color:var(--danger);padding:12px 15px;border-radius:10px;margin-bottom:20px;display:none;font-size:14px;border:1px solid rgba(241,92,109,0.3);align-items:center;gap:10px}
+        .login-error.show{display:flex}
+        .loading{display:inline-block;width:50px;height:50px;border:4px solid var(--bg-input);border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .footer{text-align:center;padding:20px;color:var(--text-secondary);font-size:12px;border-top:1px solid var(--border-color);background:var(--bg-card)}
+        .footer a{color:var(--primary);text-decoration:none}
+        .quick-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
+        .stat-card{background:var(--bg-card);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border-color)}
+        .stat-card i{font-size:28px;color:var(--primary);margin-bottom:10px}
+        .stat-card h4{font-size:24px;font-weight:700;margin-bottom:5px}
+        .stat-card p{font-size:12px;color:var(--text-secondary)}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:var(--bg-dark)}
+        ::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+        ::-webkit-scrollbar-thumb:hover{background:var(--primary)}
+        @media(max-width:768px){.sidebar{transform:translateX(-100%)}.main-content{margin-left:0}.quick-stats{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="login-page" id="loginPage">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo"><i class="fab fa-whatsapp"></i></div>
+                <h1>Bulk WhatsApps Business</h1>
+                <p>Automation Platform</p>
+            </div>
+            <div class="login-body">
+                <div class="login-error" id="loginError"><i class="fas fa-exclamation-circle"></i><span id="loginErrorText"></span></div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                </div>
+                <button class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </div>
+            <div class="footer">Powered by <a href="https://pathostar.in/">STARNEXT TECHNOLOGIES</a></div>
+        </div>
+    </div>
+    <div class="app-wrapper" id="appWrapper" style="display:none">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"><i class="fab fa-whatsapp"></i></div>
+                <h2>Bulk WhatsApps Business</h2>
+                <p>Automation Platform</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">Main Menu</div>
+                <div class="nav-item active" id="dashboardNav" onclick="showSection('dashboard')"><i class="fas fa-home"></i><span>Dashboard</span></div>
+                <div class="nav-item" id="messagesNav" onclick="showSection('messages')"><i class="fas fa-paper-plane"></i><span>Send Message</span></div>
+                <div class="nav-item" id="documentsNav" onclick="showSection('documents')"><i class="fas fa-file-pdf"></i><span>Send Document</span></div>
+                <div class="nav-item" id="bulkNav" onclick="showSection('bulk')"><i class="fas fa-users"></i><span>Bulk Message</span></div>
+                <div class="nav-section">Settings</div>
+                <div class="nav-item" id="connectionNav" onclick="showSection('connection')"><i class="fas fa-qrcode"></i><span>WhatsApp Connection</span></div>
+                <div class="nav-item" id="sessionsNav" onclick="showSection('sessions')"><i class="fas fa-list"></i><span>Sessions</span></div>
+                <div class="nav-item" id="usersNavItem" style="display:none" onclick="showSection('users')"><i class="fas fa-user-plus"></i><span>Manage Users</span></div>
+                <div class="nav-item" id="settingsNav" onclick="showSection('settings')"><i class="fas fa-cog"></i><span>Settings</span></div>
+                <div class="nav-section">Developer</div>
+                <div class="nav-item" onclick="window.open('api.html','_blank')"><i class="fas fa-code"></i><span>API Documentation</span></div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info"><h4>Admin User</h4><p>Administrator</p></div>
+                    <button class="logout-btn" onclick="logout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title"><i class="fas fa-home" id="pageIcon"></i><h1 id="pageTitle">Dashboard</h1></div>
+                <div class="header-actions">
+                    <div class="connection-status disconnected" id="connectionStatus"><span class="dot"></span><span id="statusText">Not Connected</span></div>
+                </div>
+            </header>
+            <div class="content-area">
+                <section id="dashboardSection">
+                    <div class="quick-stats">
+                        <div class="stat-card"><i class="fas fa-plug"></i><h4 id="statStatus">Offline</h4><p>Connection Status</p></div>
+                        <div class="stat-card"><i class="fas fa-paper-plane"></i><h4 id="statMessages">0</h4><p>Messages Sent</p></div>
+                        <div class="stat-card"><i class="fas fa-file"></i><h4 id="statDocs">0</h4><p>Documents Sent</p></div>
+                        <div class="stat-card"><i class="fas fa-envelope"></i><h4 id="statRemaining">0</h4><p>Messages Remaining</p></div>
+                    </div>
+                    <div class="api-stats-section" style="margin-bottom:20px">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-chart-line"></i><h3>My Message Statistics (<span id="statsUsername">-</span>)</h3></div>
+                            <div class="card-body">
+                                <div class="quick-stats" style="margin-bottom:15px">
+                                    <div class="stat-card" style="background:linear-gradient(135deg,#28a745,#20c997)"><i class="fas fa-check-circle"></i><h4 id="userSent">0</h4><p>Total Sent</p></div>
+                                    <div class="stat-card" style="background:linear-gradient(135deg,#ffc107,#fd7e14)"><i class="fas fa-clock"></i><h4 id="userPending">0</h4><p>Pending</p></div>
+                                    <div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#c82333)"><i class="fas fa-times-circle"></i><h4 id="userFailed">0</h4><p>Failed</p></div>
+                                    <div class="stat-card" style="background:linear-gradient(135deg,#17a2b8,#138496)"><i class="fas fa-chart-bar"></i><h4 id="userTotal">0</h4><p>Total Messages</p></div>
+                                </div>
+                                <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+                                    <span style="background:#28a745;color:white;padding:5px 15px;border-radius:20px;font-size:12px"><i class="fas fa-comment"></i> Text: <span id="userTextCount">0</span></span>
+                                    <span style="background:#007bff;color:white;padding:5px 15px;border-radius:20px;font-size:12px"><i class="fas fa-file-pdf"></i> PDF: <span id="userPdfCount">0</span></span>
+                                    <span style="background:#9b59b6;color:white;padding:5px 15px;border-radius:20px;font-size:12px"><i class="fas fa-code"></i> API: <span id="userApiCount">0</span></span>
+                                    <span style="background:#3498db;color:white;padding:5px 15px;border-radius:20px;font-size:12px"><i class="fas fa-globe"></i> Web: <span id="userWebCount">0</span></span>
+                                    <span style="background:#6f42c1;color:white;padding:5px 15px;border-radius:20px;font-size:12px"><i class="fas fa-key"></i> Limit: <span id="userLimitRemaining">0</span>/<span id="userLimitTotal">0</span></span>
+                                    <button class="btn btn-primary" onclick="loadUserStats()" style="margin-left:auto;padding:5px 15px"><i class="fas fa-sync"></i> Refresh</button>
+                                </div>
+                                <h4 style="margin:15px 0 10px;font-size:13px;color:var(--text-secondary)"><i class="fas fa-calendar-alt"></i> Message Report (Date Filter)</h4>
+                                <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+                                    <input type="date" id="reportStartDate" style="padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-input);color:var(--text-primary)">
+                                    <span style="color:var(--text-secondary)">to</span>
+                                    <input type="date" id="reportEndDate" style="padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-input);color:var(--text-primary)">
+                                    <button class="btn btn-primary" onclick="loadDateReport()" style="padding:8px 15px"><i class="fas fa-search"></i> Get Report</button>
+                                </div>
+                                <div id="dateReportStats" style="display:none;margin-bottom:10px">
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                                        <span style="background:#28a745;color:white;padding:5px 12px;border-radius:15px;font-size:11px"><i class="fas fa-check"></i> Sent: <span id="reportSent">0</span></span>
+                                        <span style="background:#ffc107;color:#333;padding:5px 12px;border-radius:15px;font-size:11px"><i class="fas fa-clock"></i> Pending: <span id="reportPending">0</span></span>
+                                        <span style="background:#dc3545;color:white;padding:5px 12px;border-radius:15px;font-size:11px"><i class="fas fa-times"></i> Failed: <span id="reportFailed">0</span></span>
+                                        <span style="background:#17a2b8;color:white;padding:5px 12px;border-radius:15px;font-size:11px"><i class="fas fa-chart-bar"></i> Total: <span id="reportTotal">0</span></span>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px">
+                                    <div>
+                                        <h4 style="margin:0 0 10px;font-size:13px;color:#9b59b6"><i class="fas fa-code"></i> API Messages (<span id="apiHistoryCount">0</span>)</h4>
+                                        <div id="apiHistoryList" style="max-height:200px;overflow-y:auto;background:var(--bg-dark);border-radius:8px;padding:10px"></div>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin:0 0 10px;font-size:13px;color:#3498db"><i class="fas fa-globe"></i> Web Messages (<span id="webHistoryCount">0</span>)</h4>
+                                        <div id="webHistoryList" style="max-height:200px;overflow-y:auto;background:var(--bg-dark);border-radius:8px;padding:10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cards-grid">
+                        <div class="card qr-card">
+                            <div class="card-header"><i class="fas fa-qrcode"></i><h3>WhatsApp Connection</h3></div>
+                            <div class="card-body">
+                                <div class="session-input">
+                                    <label><i class="fas fa-tag"></i> Session Name</label>
+                                    <input type="text" id="sessionName" value="karan" placeholder="Enter session name">
+                                </div>
+                                <div class="qr-box" id="qrBox"><div class="qr-placeholder"><i class="fas fa-qrcode"></i>Click Connect to generate QR</div></div>
+                                <button class="btn btn-primary" id="connectBtn" onclick="connectWhatsApp()"><i class="fab fa-whatsapp"></i> Connect WhatsApp</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-bolt"></i><h3>Quick Actions</h3></div>
+                            <div class="card-body">
+                                <div class="tabs">
+                                    <button class="tab active" onclick="switchTab('text')"><i class="fas fa-comment"></i> Text</button>
+                                    <button class="tab" onclick="switchTab('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
+                                </div>
+                                <div class="tab-content active" id="textTab">
+                                    <div class="form-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="phone" placeholder="918683916682"></div>
+                                    <div class="form-group"><label><i class="fas fa-comment-alt"></i> Message</label><input type="text" id="message" placeholder="Hello from WhatsApp Bot!"></div>
+                                    <button class="btn btn-primary" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send Message</button>
+                                </div>
+                                <div class="tab-content" id="pdfTab">
+                                    <div class="form-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="pdfPhone" placeholder="918683916682"></div>
+                                    <div class="form-group">
+                                        <label><i class="fas fa-file-pdf"></i> Select PDF File</label>
+                                        <div class="file-input-wrapper">
+                                            <div class="file-input-btn" id="fileLabel"><i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:10px"></i>Click to select PDF file</div>
+                                            <input type="file" id="pdfFile" accept=".pdf" onchange="updateFileLabel()">
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><label><i class="fas fa-heading"></i> Caption (Optional)</label><input type="text" id="pdfCaption" placeholder="Here is your document"></div>
+                                    <button class="btn btn-primary" onclick="sendPDF()"><i class="fas fa-file-export"></i> Send PDF</button>
+                                </div>
+                                <div class="alert alert-success" id="successMsg"><i class="fas fa-check-circle"></i><span>Sent successfully!</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="messagesSection" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-paper-plane"></i><h3>Send Text Message</h3></div>
+                        <div class="card-body">
+                            <div class="form-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="msgPhone" placeholder="918683916682"></div>
+                            <div class="form-group"><label><i class="fas fa-comment-alt"></i> Message</label><textarea id="msgText" rows="4" placeholder="Type your message here..."></textarea></div>
+                            <button class="btn btn-primary" onclick="sendMessageFromSection()"><i class="fas fa-paper-plane"></i> Send Message</button>
+                            <div class="alert alert-success" id="msgSuccessAlert"><i class="fas fa-check-circle"></i><span>Message sent successfully!</span></div>
+                        </div>
+                    </div>
+                </section>
+                <section id="documentsSection" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-file-pdf"></i><h3>Send Document</h3></div>
+                        <div class="card-body">
+                            <div class="form-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="docPhone" placeholder="918683916682"></div>
+                            <div class="form-group">
+                                <label><i class="fas fa-file-pdf"></i> Select PDF File</label>
+                                <div class="file-input-wrapper">
+                                    <div class="file-input-btn" id="docFileLabel"><i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:10px"></i>Click to select PDF file</div>
+                                    <input type="file" id="docPdfFile" accept=".pdf" onchange="updateDocFileLabel()">
+                                </div>
+                            </div>
+                            <div class="form-group"><label><i class="fas fa-heading"></i> Caption (Optional)</label><input type="text" id="docCaption" placeholder="Here is your document"></div>
+                            <button class="btn btn-primary" onclick="sendPDFFromSection()"><i class="fas fa-file-export"></i> Send Document</button>
+                            <div class="alert alert-success" id="docSuccessAlert"><i class="fas fa-check-circle"></i><span>Document sent successfully!</span></div>
+                        </div>
+                    </div>
+                </section>
+                <section id="connectionSection" style="display:none">
+                    <div class="card qr-card">
+                        <div class="card-header"><i class="fas fa-qrcode"></i><h3>WhatsApp Connection</h3></div>
+                        <div class="card-body">
+                            <div class="session-input"><label><i class="fas fa-tag"></i> Session Name</label><input type="text" id="sessionName2" value="karan" placeholder="Enter session name"></div>
+                            <div class="qr-box" id="qrBox2"><div class="qr-placeholder"><i class="fas fa-qrcode"></i>Click Connect to generate QR</div></div>
+                            <button class="btn btn-primary" id="connectBtn2" onclick="connectWhatsApp()"><i class="fab fa-whatsapp"></i> Connect WhatsApp</button>
+                        </div>
+                    </div>
+                </section>
+                <section id="sessionsSection" style="display:none"><div class="card"><div class="card-header"><i class="fas fa-list"></i><h3>Active Sessions</h3></div><div class="card-body"><p style="color:var(--text-secondary)">Session management coming soon...</p></div></div></section>
+                <section id="bulkSection" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-users"></i><h3>Bulk Message - Text & Document</h3></div>
+                        <div class="card-body">
+                            <div class="tabs">
+                                <button class="tab active" onclick="switchBulkTab('bulkText')"><i class="fas fa-comment"></i> Bulk Text</button>
+                                <button class="tab" onclick="switchBulkTab('bulkPdf')"><i class="fas fa-file-pdf"></i> Bulk PDF</button>
+                            </div>
+                            <div class="tab-content active" id="bulkTextTab">
+                                <div class="form-group"><label><i class="fas fa-phone-alt"></i> Phone Numbers (one per line)</label><textarea id="bulkPhones" rows="5" placeholder="918683916682&#10;918683916682&#10;918683916682"></textarea></div>
+                                <div class="form-group"><label><i class="fas fa-list-ol"></i> Number of Templates</label><select id="templateCount" onchange="updateTemplateFields()" style="width:100%;padding:14px 16px;border:2px solid var(--border-color);border-radius:10px;font-size:14px;background:var(--bg-input);color:var(--text-primary)"><option value="1">1 Template (Same message to all)</option><option value="2">2 Templates (Random)</option><option value="3" selected>3 Templates (Random - Best for avoiding block)</option></select></div>
+                                <div id="templateFields">
+                                    <div class="form-group"><label><i class="fas fa-comment-alt"></i> Message Template 1</label><textarea id="bulkMessage1" rows="2" placeholder="Hello! This is message template 1..."></textarea></div>
+                                    <div class="form-group" id="template2Div"><label><i class="fas fa-comment-alt"></i> Message Template 2</label><textarea id="bulkMessage2" rows="2" placeholder="Hi there! This is message template 2..."></textarea></div>
+                                    <div class="form-group" id="template3Div"><label><i class="fas fa-comment-alt"></i> Message Template 3</label><textarea id="bulkMessage3" rows="2" placeholder="Hey! This is message template 3..."></textarea></div>
+                                </div>
+                                <button class="btn btn-primary" onclick="startBulkText()" id="bulkTextBtn"><i class="fas fa-paper-plane"></i> Start Bulk Send</button>
+                            </div>
+                            <div class="tab-content" id="bulkPdfTab">
+                                <div class="form-group"><label><i class="fas fa-phone-alt"></i> Phone Numbers (one per line)</label><textarea id="bulkPdfPhones" rows="5" placeholder="918683916682&#10;918683916682&#10;918683916682"></textarea></div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-file-pdf"></i> Select PDF File</label>
+                                    <div class="file-input-wrapper">
+                                        <div class="file-input-btn" id="bulkFileLabel"><i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:10px"></i>Click to select PDF file</div>
+                                        <input type="file" id="bulkPdfFile" accept=".pdf" onchange="updateBulkFileLabel()">
+                                    </div>
+                                </div>
+                                <div class="form-group"><label><i class="fas fa-heading"></i> Caption (Optional)</label><input type="text" id="bulkPdfCaption" placeholder="Here is your document"></div>
+                                <button class="btn btn-primary" onclick="startBulkPdf()" id="bulkPdfBtn"><i class="fas fa-file-export"></i> Start Bulk PDF Send</button>
+                            </div>
+                            <div id="bulkProgress" style="display:none;margin-top:20px;padding:15px;background:var(--bg-dark);border-radius:10px">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span id="bulkStatusText">Sending...</span><span id="bulkCounter">0/0</span></div>
+                                <div style="background:var(--bg-input);border-radius:5px;height:10px;overflow:hidden"><div id="bulkProgressBar" style="background:var(--primary);height:100%;width:0%;transition:width 0.3s"></div></div>
+                                <div id="bulkLog" style="margin-top:15px;max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-secondary)"></div>
+                            </div>
+                            <button class="btn" onclick="stopBulk()" id="stopBulkBtn" style="display:none;margin-top:15px;background:var(--danger);color:white"><i class="fas fa-stop"></i> Stop Sending</button>
+                        </div>
+                    </div>
+                </section>
+                <section id="settingsSection" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-cog"></i><h3>Settings</h3></div>
+                        <div class="card-body">
+                            <!-- API Documentation Password (Admin Only) -->
+                            <div id="apiDocsPasswordSection" style="display:none">
+                                <h4 style="margin-bottom:15px;color:var(--text-primary)"><i class="fas fa-lock"></i> API Documentation Password</h4>
+                                <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:15px">
+                                    <div>
+                                        <label style="color:var(--text-secondary);font-size:12px;display:block;margin-bottom:5px">Current Password</label>
+                                        <input type="text" id="currentApiDocsPassword" readonly style="padding:12px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);width:100%">
+                                    </div>
+                                    <div>
+                                        <label style="color:var(--text-secondary);font-size:12px;display:block;margin-bottom:5px">New Password</label>
+                                        <input type="text" id="newApiDocsPassword" placeholder="Enter new password" style="padding:12px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);width:100%">
+                                    </div>
+                                    <button class="btn" onclick="updateApiDocsPassword()" style="white-space:nowrap"><i class="fas fa-save"></i> Update Password</button>
+                                </div>
+                                <p style="color:var(--text-secondary);font-size:12px"><i class="fas fa-info-circle"></i> This password protects access to API Documentation page. Admin users are automatically bypassed.</p>
+                            </div>
+                            <p id="settingsNonAdmin" style="color:var(--text-secondary);display:none">Settings coming soon...</p>
+                        </div>
+                    </div>
+                </section>
+                <section id="usersSection" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-user-plus"></i><h3>Manage Users (Admin Only)</h3></div>
+                        <div class="card-body">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;margin-bottom:20px">
+                                <input type="text" id="newUsername" placeholder="Username" style="padding:12px;border:2px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary)">
+                                <input type="password" id="newPassword" placeholder="Password" style="padding:12px;border:2px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary)">
+                                <input type="number" id="newMsgLimit" placeholder="Message Limit" value="100" style="padding:12px;border:2px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary)">
+                                <button class="btn btn-primary" onclick="addUser()" style="padding:12px 20px"><i class="fas fa-plus"></i> Add</button>
+                            </div>
+                            <div id="usersList" style="border:1px solid var(--border-color);border-radius:10px;overflow:hidden">
+                                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto auto;gap:10px;padding:12px 15px;background:var(--bg-dark);font-weight:600;font-size:12px;color:var(--text-secondary)">
+                                    <span>Username</span><span>Message Limit</span><span>Messages Used</span><span>Remaining</span><span>Edit</span><span>Delete</span>
+                                </div>
+                                <div id="usersListBody"></div>
+                            </div>
+                            <div id="editUserModal" style="display:none;margin-top:20px;padding:20px;background:var(--bg-dark);border-radius:10px;border:2px solid var(--primary)">
+                                <h4 style="margin-bottom:15px;color:var(--primary)"><i class="fas fa-edit"></i> Edit User: <span id="editUserName"></span></h4>
+                                <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:15px">
+                                    <div>
+                                        <label style="display:block;margin-bottom:5px;font-size:12px;color:var(--text-secondary)">Add Messages</label>
+                                        <input type="number" id="addMsgLimit" placeholder="e.g., 50" min="1" style="width:100%;padding:12px;border:2px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary)">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;margin-bottom:5px;font-size:12px;color:var(--text-secondary)">OR Set New Limit</label>
+                                        <input type="number" id="setMsgLimit" placeholder="e.g., 200" min="1" style="width:100%;padding:12px;border:2px solid var(--border-color);border-radius:8px;background:var(--bg-input);color:var(--text-primary)">
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;justify-content:flex-end">
+                                        <label style="display:flex;align-items:center;gap:5px;margin-bottom:5px;font-size:12px;color:var(--text-secondary)"><input type="checkbox" id="resetUsedCheck"> Reset Used Count</label>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:10px">
+                                    <button class="btn btn-primary" onclick="saveUserEdit()" style="padding:10px 20px"><i class="fas fa-save"></i> Save</button>
+                                    <button class="btn" onclick="closeEditModal()" style="padding:10px 20px;background:var(--bg-input);color:var(--text-primary)"><i class="fas fa-times"></i> Cancel</button>
+                                </div>
+                                <!-- Menu Permissions Section -->
+                                <div style="margin-top:20px;padding-top:15px;border-top:1px solid var(--border-color)">
+                                    <h4 style="margin-bottom:10px;font-size:13px;color:var(--text-secondary)"><i class="fas fa-bars"></i> Menu Permissions</h4>
+                                    <div style="display:flex;flex-wrap:wrap;gap:10px" id="menuPermissionsCheckboxes">
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_dashboard" value="dashboard" checked> Dashboard</label>
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_messages" value="messages" checked> Send Message</label>
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_documents" value="documents" checked> Send Document</label>
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_bulk" value="bulk" checked> Bulk Message</label>
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_connection" value="connection" checked> WhatsApp Connection</label>
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_sessions" value="sessions" checked> Sessions</label>
+                                        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-primary);background:var(--bg-input);padding:8px 12px;border-radius:6px;cursor:pointer"><input type="checkbox" id="perm_settings" value="settings" checked> Settings</label>
+                                    </div>
+                                    <button class="btn" onclick="saveMenuPermissions()" style="margin-top:10px;padding:8px 15px;background:var(--primary);color:white"><i class="fas fa-shield-alt"></i> Save Permissions</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="footer">Powered by <a href="https://pathostar.in/">STARNEXT TECHNOLOGIES</a></div>
+        </main>
+    </div>
+    <script>
+        // Configuration - loaded from server
+        var API='http://localhost:3001';
+        var ADMIN_CONTACT='918683916682';
+        var RATE_LIMIT={MIN_DELAY:36000,MAX_DELAY:48000};
+        
+        // Load config from server
+        (async function loadConfig(){
+            try{
+                var resp=await fetch(API+'/api/config');
+                var cfg=await resp.json();
+                if(cfg.API_BASE_URL)API=cfg.API_BASE_URL;
+                if(cfg.ADMIN_CONTACT)ADMIN_CONTACT=cfg.ADMIN_CONTACT;
+                if(cfg.RATE_LIMIT)RATE_LIMIT=cfg.RATE_LIMIT;
+                console.log('✅ Config loaded from server');
+            }catch(e){console.log('Using default config')}
+        })();
+        
+        var token=localStorage.getItem('wa_token');var pollTimer=null;var messagesSent=0;var docsSent=0;
+        var currentUser=JSON.parse(localStorage.getItem('wa_user'))||null;
+        
+        // Secure login - prevent back button showing login page after login
+        if(token&&currentUser){
+            history.pushState(null,null,location.href);
+            window.onpopstate=function(){history.pushState(null,null,location.href)};
+            showDashboard();
+        }
+        
+        async function login(){var username=document.getElementById('username').value;var password=document.getElementById('password').value;var errorEl=document.getElementById('loginError');var errorText=document.getElementById('loginErrorText');try{var resp=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,password:password})});var data=await resp.json();if(data.success){token=data.token;localStorage.setItem('wa_token',token);currentUser={username:data.user.username,isAdmin:data.user.isAdmin,role:data.user.isAdmin?'admin':'user',msgLimit:data.user.msgLimit,msgUsed:data.user.msgUsed,menuPermissions:data.user.menuPermissions||'dashboard,messages,documents,bulk,connection,sessions,settings'};localStorage.setItem('wa_user',JSON.stringify(currentUser));localStorage.setItem('currentUser',JSON.stringify(currentUser));errorEl.classList.remove('show');history.replaceState(null,null,location.href);window.location.reload()}else{errorText.textContent=data.error||'Invalid credentials';errorEl.classList.add('show')}}catch(err){errorText.textContent='Server not responding!';errorEl.classList.add('show')}}
+        function showDashboard(){document.getElementById('loginPage').style.display='none';document.getElementById('appWrapper').style.display='flex';currentUser=JSON.parse(localStorage.getItem('wa_user'));if(currentUser){document.querySelector('.user-avatar').textContent=currentUser.username.charAt(0).toUpperCase();document.querySelector('.user-info h4').textContent=currentUser.username;document.querySelector('.user-info p').textContent=currentUser.isAdmin?'Administrator':'User';if(currentUser.isAdmin){document.getElementById('usersNavItem').style.display='flex'}else{document.getElementById('usersNavItem').style.display='none'}document.getElementById('sessionName').value=currentUser.username;if(document.getElementById('sessionName2')){document.getElementById('sessionName2').value=currentUser.username}applyMenuPermissions();updateRemainingDisplay();checkInitialStatus()}}
+        function applyMenuPermissions(){if(!currentUser)return;if(currentUser.isAdmin)return;var perms=(currentUser.menuPermissions||'dashboard,messages,documents,bulk,connection,sessions,settings').split(',');var menuMap={'dashboard':'dashboardNav','messages':'messagesNav','documents':'documentsNav','bulk':'bulkNav','connection':'connectionNav','sessions':'sessionsNav','settings':'settingsNav'};Object.keys(menuMap).forEach(function(key){var navItem=document.getElementById(menuMap[key]);if(navItem){navItem.style.display=perms.includes(key)?'flex':'none'}})}
+        async function checkInitialStatus(){var sessionName=document.getElementById('sessionName').value||'default';try{var resp=await fetch(API+'/api/whatsapp/qr/'+sessionName,{headers:{'Authorization':'Bearer '+token}});if(resp.status===401)return;var data=await resp.json();if(data.status==='open'){lastConnectedStatus=true;updateConnectionStatus('connected','Connected');document.getElementById('statStatus').textContent='Online';document.getElementById('qrBox').innerHTML='<p style="color:var(--success);padding:60px 20px;font-size:14px"><i class="fas fa-check-circle" style="font-size:50px;display:block;margin-bottom:15px"></i>WhatsApp Connected!</p>';startBackgroundCheck()}else{lastConnectedStatus=false;updateConnectionStatus('disconnected','Not Connected');document.getElementById('statStatus').textContent='Offline'}}catch(err){console.error('Initial status check error:',err)}}
+        function logout(){localStorage.removeItem('wa_token');localStorage.removeItem('wa_user');token=null;currentUser=null;lastConnectedStatus=false;stopPolling();stopBackgroundCheck();document.getElementById('loginPage').style.display='flex';document.getElementById('appWrapper').style.display='none'}
+        function showSection(section){var sections=document.querySelectorAll('.content-area section');for(var i=0;i<sections.length;i++){sections[i].style.display='none'}var navItems=document.querySelectorAll('.nav-item');for(var i=0;i<navItems.length;i++){navItems[i].classList.remove('active')}event.currentTarget.classList.add('active');var titles={'dashboard':{title:'Dashboard',icon:'fa-home'},'messages':{title:'Send Message',icon:'fa-paper-plane'},'documents':{title:'Send Document',icon:'fa-file-pdf'},'connection':{title:'WhatsApp Connection',icon:'fa-qrcode'},'sessions':{title:'Sessions',icon:'fa-list'},'settings':{title:'Settings',icon:'fa-cog'},'bulk':{title:'Bulk Message',icon:'fa-users'},'users':{title:'Manage Users',icon:'fa-user-plus'}};document.getElementById('pageTitle').textContent=titles[section].title;document.getElementById('pageIcon').className='fas '+titles[section].icon;document.getElementById(section+'Section').style.display='block';if(section==='users')renderUsersList()}
+        async function connectWhatsApp(){var sessionName=document.getElementById('sessionName').value||'default';var btn=document.getElementById('connectBtn');if(document.getElementById('sessionName2')){document.getElementById('sessionName2').value=sessionName}btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Connecting...';lastConnectedStatus=false;updateConnectionStatus('connecting','Connecting...');document.getElementById('qrBox').innerHTML='<div class="loading"></div>';try{var resp=await fetch(API+'/api/whatsapp/connect',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({sessionName:sessionName})});if(resp.status===401){logout();return}var data=await resp.json();console.log('Connect response:',data);if(data.success){startPolling()}}catch(err){console.error('Connect error:',err);updateConnectionStatus('disconnected','Connection Failed')}btn.disabled=false;btn.innerHTML='<i class="fab fa-whatsapp"></i> Connect WhatsApp'}
+        var lastConnectedStatus=false;var statusCheckTimer=null;async function checkStatus(){var sessionName=document.getElementById('sessionName').value||'default';try{var resp=await fetch(API+'/api/whatsapp/qr/'+sessionName,{headers:{'Authorization':'Bearer '+token}});if(resp.status===401){logout();return}var data=await resp.json();console.log('Status check:',data);if(data.status==='open'){lastConnectedStatus=true;updateConnectionStatus('connected','Connected');document.getElementById('statStatus').textContent='Online';document.getElementById('qrBox').innerHTML='<p style="color:var(--success);padding:60px 20px;font-size:14px"><i class="fas fa-check-circle" style="font-size:50px;display:block;margin-bottom:15px"></i>WhatsApp Connected!</p>';stopPolling();startBackgroundCheck()}else if(data.status==='qr_ready'&&data.qr){lastConnectedStatus=false;updateConnectionStatus('connecting','Scan QR Code');renderQR(data.qr)}else if(data.status==='connecting'){updateConnectionStatus('connecting','Connecting...')}else if(data.status==='disconnected'){lastConnectedStatus=false;updateConnectionStatus('disconnected','Disconnected');document.getElementById('statStatus').textContent='Offline';document.getElementById('qrBox').innerHTML='<div class="qr-placeholder"><i class="fas fa-qrcode"></i>Click Connect to generate QR</div>';stopPolling();stopBackgroundCheck()}}catch(err){console.error('Status error:',err)}}
+        function startBackgroundCheck(){stopBackgroundCheck();statusCheckTimer=setInterval(checkConnectionAlive,15000)}
+        function stopBackgroundCheck(){if(statusCheckTimer){clearInterval(statusCheckTimer);statusCheckTimer=null}}
+        async function checkConnectionAlive(){var sessionName=document.getElementById('sessionName').value||'default';try{var resp=await fetch(API+'/api/whatsapp/qr/'+sessionName,{headers:{'Authorization':'Bearer '+token}});if(resp.status===401)return;var data=await resp.json();if(data.status==='open'){updateConnectionStatus('connected','Connected');document.getElementById('statStatus').textContent='Online'}else if(data.status==='disconnected'||data.status==='close'){lastConnectedStatus=false;updateConnectionStatus('disconnected','Disconnected');document.getElementById('statStatus').textContent='Offline';document.getElementById('qrBox').innerHTML='<div class="qr-placeholder"><i class="fas fa-qrcode"></i>Session expired - Click Connect</div>';stopBackgroundCheck()}}catch(err){console.error('Background check error:',err)}}
+        function renderQR(qrData){console.log('Rendering QR...');var qrBox=document.getElementById('qrBox');qrBox.innerHTML='<canvas id="qrCanvas"></canvas>';if(typeof QRCode!=='undefined'&&QRCode.toCanvas){QRCode.toCanvas(document.getElementById('qrCanvas'),qrData,{width:200,margin:2,color:{dark:'#000000',light:'#ffffff'}},function(err){if(err){console.error('QR error:',err);useFallbackQR(qrData)}else{console.log('QR rendered')}})}else{useFallbackQR(qrData)}}
+        function useFallbackQR(qrData){var qrBox=document.getElementById('qrBox');qrBox.innerHTML='<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(qrData)+'" alt="QR Code" style="width:200px;height:200px">'}
+        function updateConnectionStatus(type,text){var statusEl=document.getElementById('connectionStatus');var statusText=document.getElementById('statusText');statusEl.className='connection-status '+type;statusText.textContent=text}
+        function startPolling(){stopPolling();checkStatus();pollTimer=setInterval(checkStatus,2000)}
+        function stopPolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null}}
+        async function sendMessage(){var sessionName=document.getElementById('sessionName').value||'default';var phone=document.getElementById('phone').value;var message=document.getElementById('message').value;var successEl=document.getElementById('successMsg');if(!phone||!message){alert('Please enter phone and message');return}if(!await checkMsgLimit(1))return;try{var resp=await fetch(API+'/api/whatsapp/send-message',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({sessionName:sessionName,phone:phone,message:message,username:currentUser.username})});var data=await resp.json();if(data.success){await incrementMsgUsed();loadUserStats();loadDateReport();successEl.classList.add('show');setTimeout(function(){successEl.classList.remove('show')},3000)}else{alert('Failed: '+(data.error||'Unknown error'))}}catch(err){alert('Error: '+err.message)}}
+        async function sendMessageFromSection(){var sessionName=document.getElementById('sessionName').value||'default';var phone=document.getElementById('msgPhone').value;var message=document.getElementById('msgText').value;var successEl=document.getElementById('msgSuccessAlert');if(!phone||!message){alert('Please enter phone and message');return}if(!await checkMsgLimit(1))return;try{var resp=await fetch(API+'/api/whatsapp/send-message',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({sessionName:sessionName,phone:phone,message:message,username:currentUser.username})});var data=await resp.json();if(data.success){await incrementMsgUsed();loadUserStats();loadDateReport();successEl.classList.add('show');setTimeout(function(){successEl.classList.remove('show')},3000)}else{alert('Failed: '+(data.error||'Unknown error'))}}catch(err){alert('Error: '+err.message)}}
+        function switchTab(tab){var tabs=document.querySelectorAll('.tab');var contents=document.querySelectorAll('.tab-content');for(var i=0;i<tabs.length;i++){tabs[i].classList.remove('active')}for(var i=0;i<contents.length;i++){contents[i].classList.remove('active')}if(tab==='text'){tabs[0].classList.add('active');document.getElementById('textTab').classList.add('active')}else{tabs[1].classList.add('active');document.getElementById('pdfTab').classList.add('active')}}
+        function updateFileLabel(){var fileInput=document.getElementById('pdfFile');var label=document.getElementById('fileLabel');if(fileInput.files.length>0){label.innerHTML='<i class="fas fa-file-pdf"></i> '+fileInput.files[0].name;label.classList.add('has-file')}else{label.innerHTML='<i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:10px"></i>Click to select PDF file';label.classList.remove('has-file')}}
+        function updateDocFileLabel(){var fileInput=document.getElementById('docPdfFile');var label=document.getElementById('docFileLabel');if(fileInput.files.length>0){label.innerHTML='<i class="fas fa-file-pdf"></i> '+fileInput.files[0].name;label.classList.add('has-file')}else{label.innerHTML='<i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:10px"></i>Click to select PDF file';label.classList.remove('has-file')}}
+        async function sendPDF(){var sessionName=document.getElementById('sessionName').value||'default';var phone=document.getElementById('pdfPhone').value;var fileInput=document.getElementById('pdfFile');var caption=document.getElementById('pdfCaption').value;var successEl=document.getElementById('successMsg');if(!phone){alert('Please enter phone number');return}if(!fileInput.files.length){alert('Please select a PDF file');return}if(!await checkMsgLimit(1))return;var formData=new FormData();formData.append('sessionName',sessionName);formData.append('phone',phone);formData.append('pdf',fileInput.files[0]);formData.append('caption',caption);formData.append('username',currentUser.username);try{var resp=await fetch(API+'/api/whatsapp/send-pdf',{method:'POST',headers:{'Authorization':'Bearer '+token},body:formData});var data=await resp.json();if(data.success){await incrementMsgUsed();loadUserStats();loadDateReport();successEl.classList.add('show');setTimeout(function(){successEl.classList.remove('show')},3000);fileInput.value='';updateFileLabel()}else{alert('Failed: '+(data.error||'Unknown error'))}}catch(err){alert('Error: '+err.message)}}
+        async function sendPDFFromSection(){var sessionName=document.getElementById('sessionName').value||'default';var phone=document.getElementById('docPhone').value;var fileInput=document.getElementById('docPdfFile');var caption=document.getElementById('docCaption').value;var successEl=document.getElementById('docSuccessAlert');if(!phone){alert('Please enter phone number');return}if(!fileInput.files.length){alert('Please select a PDF file');return}if(!await checkMsgLimit(1))return;var formData=new FormData();formData.append('sessionName',sessionName);formData.append('phone',phone);formData.append('pdf',fileInput.files[0]);formData.append('caption',caption);formData.append('username',currentUser.username);try{var resp=await fetch(API+'/api/whatsapp/send-pdf',{method:'POST',headers:{'Authorization':'Bearer '+token},body:formData});var data=await resp.json();if(data.success){await incrementMsgUsed();loadUserStats();loadDateReport();successEl.classList.add('show');setTimeout(function(){successEl.classList.remove('show')},3000);fileInput.value='';updateDocFileLabel()}else{alert('Failed: '+(data.error||'Unknown error'))}}catch(err){alert('Error: '+err.message)}}
+        var bulkRunning=false;var bulkAbort=false;
+        function switchBulkTab(tab){var tabs=document.querySelectorAll('#bulkSection .tab');var contents=document.querySelectorAll('#bulkSection .tab-content');for(var i=0;i<tabs.length;i++){tabs[i].classList.remove('active')}for(var i=0;i<contents.length;i++){contents[i].classList.remove('active')}if(tab==='bulkText'){tabs[0].classList.add('active');document.getElementById('bulkTextTab').classList.add('active')}else{tabs[1].classList.add('active');document.getElementById('bulkPdfTab').classList.add('active')}}
+        function updateBulkFileLabel(){var fileInput=document.getElementById('bulkPdfFile');var label=document.getElementById('bulkFileLabel');if(fileInput.files.length>0){label.innerHTML='<i class="fas fa-file-pdf"></i> '+fileInput.files[0].name;label.classList.add('has-file')}else{label.innerHTML='<i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:10px"></i>Click to select PDF file';label.classList.remove('has-file')}}
+        function updateTemplateFields(){var count=parseInt(document.getElementById('templateCount').value);document.getElementById('template2Div').style.display=count>=2?'block':'none';document.getElementById('template3Div').style.display=count>=3?'block':'none'}
+        function getRandomTemplate(){var count=parseInt(document.getElementById('templateCount').value);var templates=[];var m1=document.getElementById('bulkMessage1').value.trim();var m2=document.getElementById('bulkMessage2').value.trim();var m3=document.getElementById('bulkMessage3').value.trim();if(m1)templates.push(m1);if(count>=2&&m2)templates.push(m2);if(count>=3&&m3)templates.push(m3);if(templates.length===0)return null;return templates[Math.floor(Math.random()*templates.length)]}
+        function getRandomDelay(){return Math.floor(Math.random()*(RATE_LIMIT.MAX_DELAY-RATE_LIMIT.MIN_DELAY+1))+RATE_LIMIT.MIN_DELAY}
+        function logBulk(msg,type){var log=document.getElementById('bulkLog');var color=type==='success'?'var(--success)':type==='error'?'var(--danger)':'var(--text-secondary)';log.innerHTML+='<div style="color:'+color+';padding:3px 0">'+new Date().toLocaleTimeString()+' - '+msg+'</div>';log.scrollTop=log.scrollHeight}
+        function updateBulkProgress(sent,total){document.getElementById('bulkCounter').textContent=sent+'/'+total;var percent=(sent/total)*100;document.getElementById('bulkProgressBar').style.width=percent+'%'}
+        async function startBulkText(){if(bulkRunning){alert('Bulk send already running!');return}var phones=document.getElementById('bulkPhones').value.trim().split('\n').filter(function(p){return p.trim()});var sessionName=document.getElementById('sessionName').value||'default';var count=parseInt(document.getElementById('templateCount').value);var m1=document.getElementById('bulkMessage1').value.trim();if(phones.length===0){alert('Please enter phone numbers');return}if(!m1){alert('Please enter at least Template 1 message');return}if(count>=2&&!document.getElementById('bulkMessage2').value.trim()){alert('Please enter Template 2 message');return}if(count>=3&&!document.getElementById('bulkMessage3').value.trim()){alert('Please enter Template 3 message');return}if(!await checkMsgLimit(phones.length))return;bulkRunning=true;bulkAbort=false;document.getElementById('bulkProgress').style.display='block';document.getElementById('stopBulkBtn').style.display='inline-block';document.getElementById('bulkTextBtn').disabled=true;document.getElementById('bulkLog').innerHTML='';document.getElementById('bulkStatusText').textContent='Starting bulk send...';updateBulkProgress(0,phones.length);logBulk('Starting bulk text send to '+phones.length+' numbers ('+count+' templates)','info');for(var i=0;i<phones.length;i++){if(bulkAbort){logBulk('Bulk send stopped by user','error');break}var phone=phones[i].trim();var message=getRandomTemplate();document.getElementById('bulkStatusText').textContent='Sending to '+phone+' ('+(i+1)+'/'+phones.length+')';try{var resp=await fetch(API+'/api/whatsapp/send-message',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({sessionName:sessionName,phone:phone,message:message,username:currentUser.username})});var data=await resp.json();if(data.success){messagesSent++;await incrementMsgUsed();document.getElementById('statMessages').textContent=messagesSent;logBulk('Sent to '+phone+' (Template used)','success')}else{logBulk('Failed '+phone+': '+(data.error||'Unknown'),'error')}}catch(err){logBulk('Error '+phone+': '+err.message,'error')}updateBulkProgress(i+1,phones.length);if(i<phones.length-1&&!bulkAbort){var delay=getRandomDelay();var secs=Math.round(delay/1000);logBulk('Waiting '+secs+' seconds...','info');await new Promise(function(r){setTimeout(r,delay)})}}document.getElementById('bulkStatusText').textContent=bulkAbort?'Stopped':'Completed!';bulkRunning=false;document.getElementById('stopBulkBtn').style.display='none';document.getElementById('bulkTextBtn').disabled=false;logBulk(bulkAbort?'Bulk send stopped':'Bulk send completed!',bulkAbort?'error':'success')}
+        async function startBulkPdf(){if(bulkRunning){alert('Bulk send already running!');return}var phones=document.getElementById('bulkPdfPhones').value.trim().split('\n').filter(function(p){return p.trim()});var fileInput=document.getElementById('bulkPdfFile');var caption=document.getElementById('bulkPdfCaption').value;var sessionName=document.getElementById('sessionName').value||'default';if(phones.length===0){alert('Please enter phone numbers');return}if(!fileInput.files.length){alert('Please select a PDF file');return}if(!await checkMsgLimit(phones.length))return;bulkRunning=true;bulkAbort=false;document.getElementById('bulkProgress').style.display='block';document.getElementById('stopBulkBtn').style.display='inline-block';document.getElementById('bulkPdfBtn').disabled=true;document.getElementById('bulkLog').innerHTML='';document.getElementById('bulkStatusText').textContent='Starting bulk PDF send...';updateBulkProgress(0,phones.length);logBulk('Starting bulk PDF send to '+phones.length+' numbers','info');for(var i=0;i<phones.length;i++){if(bulkAbort){logBulk('Bulk send stopped by user','error');break}var phone=phones[i].trim();document.getElementById('bulkStatusText').textContent='Sending PDF to '+phone+' ('+(i+1)+'/'+phones.length+')';var formData=new FormData();formData.append('sessionName',sessionName);formData.append('phone',phone);formData.append('pdf',fileInput.files[0]);formData.append('caption',caption);formData.append('username',currentUser.username);try{var resp=await fetch(API+'/api/whatsapp/send-pdf',{method:'POST',headers:{'Authorization':'Bearer '+token},body:formData});var data=await resp.json();if(data.success){docsSent++;await incrementMsgUsed();document.getElementById('statDocs').textContent=docsSent;logBulk('Sent PDF to '+phone,'success')}else{logBulk('Failed '+phone+': '+(data.error||'Unknown'),'error')}}catch(err){logBulk('Error '+phone+': '+err.message,'error')}updateBulkProgress(i+1,phones.length);if(i<phones.length-1&&!bulkAbort){var delay=getRandomDelay();var secs=Math.round(delay/1000);logBulk('Waiting '+secs+' seconds...','info');await new Promise(function(r){setTimeout(r,delay)})}}document.getElementById('bulkStatusText').textContent=bulkAbort?'Stopped':'Completed!';bulkRunning=false;document.getElementById('stopBulkBtn').style.display='none';document.getElementById('bulkPdfBtn').disabled=false;logBulk(bulkAbort?'Bulk send stopped':'Bulk PDF send completed!',bulkAbort?'error':'success')}
+        function stopBulk(){bulkAbort=true;document.getElementById('bulkStatusText').textContent='Stopping...'}
+        async function checkMsgLimit(count){try{var resp=await fetch(API+'/api/users/'+currentUser.username+'/stats');var data=await resp.json();if(data.success){var remaining=data.remaining;if(remaining<=0){alert('⚠️ MESSAGE LIMIT EXPIRED!\n\nAapki message limit khatam ho gayi hai.\n\nNaye messages ke liye admin se contact karein:\n📞 '+ADMIN_CONTACT+'\n\nPowered by STARNEXT TECHNOLOGIES');return false}if(count>remaining){alert('⚠️ INSUFFICIENT LIMIT!\n\nAap sirf '+remaining+' messages bhej sakte ho.\nAapne '+count+' numbers enter kiye hain.\n\nLimit badhane ke liye contact karein:\n📞 '+ADMIN_CONTACT);return false}}}catch(e){}return true}
+        async function incrementMsgUsed(){try{await loadUserStats()}catch(e){}}
+        async function updateRemainingDisplay(){try{await loadUserStats()}catch(e){}}
+        async function addUser(){if(!currentUser||!currentUser.isAdmin){alert('Only admin can add users!');return}var username=document.getElementById('newUsername').value.trim();var password=document.getElementById('newPassword').value;var msgLimit=parseInt(document.getElementById('newMsgLimit').value)||100;if(!username||!password){alert('Please enter username and password');return}try{var resp=await fetch(API+'/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,password:password,msgLimit:msgLimit})});var data=await resp.json();if(data.success){document.getElementById('newUsername').value='';document.getElementById('newPassword').value='';document.getElementById('newMsgLimit').value='100';renderUsersList();alert('User '+username+' created with '+msgLimit+' message limit!')}else{alert(data.error||'Failed to create user')}}catch(e){alert('Error creating user')}}
+        async function deleteUser(username){if(username==='admin'){alert('Cannot delete admin!');return}if(!confirm('Delete user '+username+'?'))return;try{await fetch(API+'/api/users/'+username,{method:'DELETE'});renderUsersList()}catch(e){}}
+        var editingUser=null;
+        var editingUserPermissions='';
+        function openEditModal(username,menuPermissions){editingUser=username;editingUserPermissions=menuPermissions||'dashboard,messages,documents,bulk,connection,sessions,settings';document.getElementById('editUserName').textContent=username;document.getElementById('addMsgLimit').value='';document.getElementById('setMsgLimit').value='';document.getElementById('resetUsedCheck').checked=false;document.getElementById('editUserModal').style.display='block';var perms=editingUserPermissions.split(',');['dashboard','messages','documents','bulk','connection','sessions','settings'].forEach(function(p){var cb=document.getElementById('perm_'+p);if(cb)cb.checked=perms.includes(p)})}
+        function closeEditModal(){editingUser=null;editingUserPermissions='';document.getElementById('editUserModal').style.display='none'}
+        async function saveUserEdit(){if(!editingUser)return;var addLimit=parseInt(document.getElementById('addMsgLimit').value)||0;var setLimit=parseInt(document.getElementById('setMsgLimit').value)||0;var resetUsed=document.getElementById('resetUsedCheck').checked;if(addLimit<=0&&setLimit<=0){alert('Please enter Add Messages or Set New Limit!');return}try{var body={};if(addLimit>0){body.addLimit=addLimit}else{body.msgLimit=setLimit;body.resetUsed=resetUsed}var resp=await fetch(API+'/api/users/'+editingUser,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});var data=await resp.json();if(data.success){alert('✅ '+data.message);closeEditModal();renderUsersList()}else{alert(data.error||'Failed to update')}}catch(e){alert('Error updating user')}}
+        async function saveMenuPermissions(){if(!editingUser)return;var perms=[];['dashboard','messages','documents','bulk','connection','sessions','settings'].forEach(function(p){var cb=document.getElementById('perm_'+p);if(cb&&cb.checked)perms.push(p)});if(perms.length===0){alert('Please select at least one menu!');return}try{var resp=await fetch(API+'/api/users/'+editingUser,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({menuPermissions:perms.join(',')})});var data=await resp.json();if(data.success){alert('✅ Menu permissions updated for '+editingUser);renderUsersList()}else{alert(data.error||'Failed to update')}}catch(e){alert('Error updating permissions')}}
+        async function renderUsersList(){try{var resp=await fetch(API+'/api/users');var data=await resp.json();if(data.success){var html='';data.users.forEach(function(user){var remaining=user.msg_limit-user.msg_used;var perms=user.menu_permissions||'all';html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto auto;gap:10px;padding:12px 15px;border-top:1px solid var(--border-color);align-items:center"><span>'+user.username+(user.is_admin?' <span style="color:var(--primary);font-size:10px">(Admin)</span>':'')+'</span><span>'+user.msg_limit+'</span><span>'+user.msg_used+'</span><span style="color:'+(remaining>0?'var(--success)':'var(--danger)')+'">'+remaining+'</span><button onclick="openEditModal(\''+user.username+'\',\''+perms+'\')" style="background:var(--primary);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer" title="Edit User"><i class="fas fa-edit"></i></button>'+(user.username!=='admin'?'<button onclick="deleteUser(\''+user.username+'\')" style="background:var(--danger);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer" title="Delete User"><i class="fas fa-trash"></i></button>':'<span>-</span>')+'</div>'});document.getElementById('usersListBody').innerHTML=html||'<p style="padding:20px;text-align:center;color:var(--text-secondary)">No users found</p>'}}catch(e){}}
+        async function loadUserStats(){if(!currentUser)return;try{var resp=await fetch(API+'/api/users/'+currentUser.username+'/message-stats');var data=await resp.json();if(data.success){document.getElementById('statsUsername').textContent=currentUser.username;document.getElementById('userSent').textContent=data.stats.sent||0;document.getElementById('userPending').textContent=data.stats.pending||0;document.getElementById('userFailed').textContent=data.stats.failed||0;document.getElementById('userTotal').textContent=data.stats.total||0;document.getElementById('userTextCount').textContent=data.stats.textCount||0;document.getElementById('userPdfCount').textContent=data.stats.pdfCount||0;document.getElementById('userApiCount').textContent=data.stats.apiCount||0;document.getElementById('userWebCount').textContent=data.stats.webCount||0;document.getElementById('statMessages').textContent=data.stats.textCount||0;document.getElementById('statDocs').textContent=data.stats.pdfCount||0;if(data.userLimit){document.getElementById('userLimitTotal').textContent=data.userLimit.limit;document.getElementById('userLimitRemaining').textContent=data.userLimit.remaining;document.getElementById('statRemaining').textContent=data.userLimit.remaining}if(currentUser&&currentUser.isAdmin){document.getElementById('apiLimitManage').style.display='block'}var apiHtml='';var webHtml='';var apiCount=0;var webCount=0;if(data.history&&data.history.length>0){data.history.forEach(function(msg){var statusColor=msg.status==='sent'?'#28a745':msg.status==='pending'?'#ffc107':'#dc3545';var typeIcon=(msg.msg_type==='pdf'||msg.msg_type==='api_pdf')?'fa-file-pdf':'fa-comment';var rowHtml='<div style="display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid var(--border-color);font-size:11px;color:var(--text-primary)"><span><i class="fas '+typeIcon+'" style="color:var(--primary);margin-right:5px"></i>'+msg.phone+'</span><span style="color:'+statusColor+';font-weight:bold">'+msg.status.toUpperCase()+'</span><span style="color:var(--text-secondary);font-size:10px">'+(msg.created_at?new Date(msg.created_at).toLocaleString():'')+'</span></div>';if(msg.msg_type&&msg.msg_type.includes('api')){apiHtml+=rowHtml;apiCount++}else{webHtml+=rowHtml;webCount++}})}document.getElementById('apiHistoryCount').textContent=apiCount;document.getElementById('webHistoryCount').textContent=webCount;document.getElementById('apiHistoryList').innerHTML=apiHtml||'<p style="text-align:center;color:var(--text-secondary);padding:15px;font-size:11px">No API messages</p>';document.getElementById('webHistoryList').innerHTML=webHtml||'<p style="text-align:center;color:var(--text-secondary);padding:15px;font-size:11px">No Web messages</p>'}}catch(e){console.error('User stats error:',e)}}
+        async function loadDateReport(){var startDate=document.getElementById('reportStartDate').value;var endDate=document.getElementById('reportEndDate').value;if(!startDate||!endDate){alert('Please select both start and end dates');return}if(!currentUser)return;try{var resp=await fetch(API+'/api/users/'+currentUser.username+'/history-report?startDate='+startDate+'&endDate='+endDate);var data=await resp.json();if(data.success){document.getElementById('dateReportStats').style.display='block';document.getElementById('reportSent').textContent=data.stats.sent||0;document.getElementById('reportPending').textContent=data.stats.pending||0;document.getElementById('reportFailed').textContent=data.stats.failed||0;document.getElementById('reportTotal').textContent=data.stats.total||0;var apiHtml='';var webHtml='';var apiCount=0;var webCount=0;if(data.history&&data.history.length>0){data.history.forEach(function(msg){var statusColor=msg.status==='sent'?'#28a745':msg.status==='pending'?'#ffc107':'#dc3545';var typeIcon=(msg.msg_type==='pdf'||msg.msg_type==='api_pdf')?'fa-file-pdf':'fa-comment';var rowHtml='<div style="display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid var(--border-color);font-size:11px;color:var(--text-primary)"><span><i class="fas '+typeIcon+'" style="color:var(--primary);margin-right:5px"></i>'+msg.phone+'</span><span style="color:'+statusColor+';font-weight:bold">'+msg.status.toUpperCase()+'</span><span style="color:var(--text-secondary);font-size:10px">'+(msg.created_at?new Date(msg.created_at).toLocaleString():'')+'</span></div>';if(msg.msg_type&&msg.msg_type.includes('api')){apiHtml+=rowHtml;apiCount++}else{webHtml+=rowHtml;webCount++}})}document.getElementById('apiHistoryCount').textContent=apiCount;document.getElementById('webHistoryCount').textContent=webCount;document.getElementById('apiHistoryList').innerHTML=apiHtml||'<p style="text-align:center;color:var(--text-secondary);padding:15px;font-size:11px">No API messages in this range</p>';document.getElementById('webHistoryList').innerHTML=webHtml||'<p style="text-align:center;color:var(--text-secondary);padding:15px;font-size:11px">No Web messages in this range</p>'}}catch(e){console.error('Report error:',e)}}
+        async function updateApiLimit(){var addLimit=parseInt(document.getElementById('apiAddLimit').value)||0;var setLimit=parseInt(document.getElementById('apiSetLimit').value)||0;var resetUsed=document.getElementById('apiResetUsed').checked;if(addLimit<=0&&setLimit<=0){alert('Please enter Add Messages or Set New Limit!');return}try{var body={};if(addLimit>0){body.addLimit=addLimit}else{body.setLimit=setLimit;body.resetUsed=resetUsed}var resp=await fetch(API+'/api/api-limit',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});var data=await resp.json();if(data.success){alert('✅ '+data.message+'\nNew Limit: '+data.newLimit+'\nRemaining: '+data.remaining);document.getElementById('apiAddLimit').value='';document.getElementById('apiSetLimit').value='';document.getElementById('apiResetUsed').checked=false;loadUserStats()}else{alert(data.error||'Failed to update')}}catch(e){alert('Error updating API limit')}}
+        
+        // API Documentation Password Management
+        async function loadApiDocsPassword(){if(!currentUser||!currentUser.isAdmin)return;try{var resp=await fetch(API+'/api/api-docs-password/'+currentUser.username);var data=await resp.json();if(data.success){document.getElementById('currentApiDocsPassword').value=data.password||'Not Set'}}catch(e){console.error('Load API docs password error:',e)}}
+        
+        async function updateApiDocsPassword(){var newPassword=document.getElementById('newApiDocsPassword').value.trim();if(!newPassword){alert('Please enter a new password');return}if(newPassword.length<4){alert('Password must be at least 4 characters');return}try{var resp=await fetch(API+'/api/api-docs-password',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:newPassword})});var data=await resp.json();if(data.success){alert('✅ API Documentation password updated successfully!');document.getElementById('currentApiDocsPassword').value=newPassword;document.getElementById('newApiDocsPassword').value=''}else{alert(data.error||'Failed to update password')}}catch(e){alert('Error updating password')}}
+        
+        function initSettingsSection(){if(currentUser&&currentUser.isAdmin){document.getElementById('apiDocsPasswordSection').style.display='block';document.getElementById('settingsNonAdmin').style.display='none';loadApiDocsPassword()}else{document.getElementById('apiDocsPasswordSection').style.display='none';document.getElementById('settingsNonAdmin').style.display='block'}}
+        
+        function initDateFilters(){var today=new Date().toISOString().split('T')[0];document.getElementById('reportStartDate').value=today;document.getElementById('reportEndDate').value=today;loadDateReport()}
+        
+        if(token&&currentUser){loadUserStats();setInterval(loadUserStats,30000);initSettingsSection();initDateFilters()}
+    </script>
+</body>
+</html>

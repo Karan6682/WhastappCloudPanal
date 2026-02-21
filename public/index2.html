@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Automation - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .toggle-auth p {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .btn-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .demo-info {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .demo-info p {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        #emailGroup {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1>🔐 WhatsApp Automation</h1>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group" id="emailGroup">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-login" id="submitBtn">Login</button>
+            </form>
+
+            <div class="toggle-auth">
+                <p id="toggleText">Don't have an account?</p>
+                <button type="button" class="btn-toggle" id="toggleBtn">Create New Account</button>
+            </div>
+
+            <div class="demo-info">
+                <p>📌 Demo Credentials:</p>
+                <small>Username: <strong>admin</strong> | Password: <strong>admin123</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        let isLogin = true;
+
+        const form = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const toggleText = document.getElementById('toggleText');
+        const emailGroup = document.getElementById('emailGroup');
+
+        toggleBtn.addEventListener('click', () => {
+            isLogin = !isLogin;
+            if (isLogin) {
+                emailGroup.style.display = 'none';
+                emailInput.required = false;
+                toggleText.textContent = "Don't have an account?";
+                toggleBtn.textContent = 'Create New Account';
+                submitBtn.textContent = 'Login';
+            } else {
+                emailGroup.style.display = 'block';
+                emailInput.required = true;
+                toggleText.textContent = 'Already have an account?';
+                toggleBtn.textContent = 'Login Here';
+                submitBtn.textContent = 'Register';
+            }
+            errorMessage.classList.remove('show');
+            form.reset();
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.classList.remove('show');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                if (isLogin) {
+                    // Login
+                    const response = await fetch(`${API_BASE}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: usernameInput.value,
+                            password: passwordInput.value
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Login failed');
+                    }
+
+                    // Save to localStorage
+                    localStorage.setItem('token', (data.token || '').trim());
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 500);
+                } else {
+                    // Register
+                    const response = await fetch(`${API_BASE}/api/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: usernameInput.value,
+                            email: emailInput.value,
+                            password: passwordInput.value
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Registration failed');
+                    }
+
+                    alert('Registration successful! Please login with your credentials.');
+                    isLogin = true;
+                    emailGroup.style.display = 'none';
+                    toggleText.textContent = "Don't have an account?";
+                    toggleBtn.textContent = 'Create New Account';
+                    submitBtn.textContent = 'Login';
+                    form.reset();
+                }
+            } catch (err) {
+                errorMessage.textContent = '❌ ' + (err.message || 'An error occurred');
+                errorMessage.classList.add('show');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLogin ? 'Login' : 'Register';
+            }
+        });
+    </script>
+</body>
+</html>

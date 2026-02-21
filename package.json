@@ -6,21 +6,24 @@
   "scripts": {
     "start": "node backend/server-simple.js",
     "start:backend": "node backend/server-simple.js",
-    "dev": "node backend/server-simple.js"
+    "dev": "node backend/server-simple.js",
+    "build": "node build.js",
+    "prod": "cd dist && node backend/server-simple.js"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "^5.0.0",
-    "@whiskeysockets/baileys": "^6.6.0",
+    "@whiskeysockets/baileys": "6.7.9",
+    "cors": "^2.8.5",
     "csv-parse": "^5.0.0",
-    "express": "^5.2.1",
+    "express": "^4.21.0",
     "fs-extra": "^11.0.0",
-    "multer": "^2.0.2",
+    "multer": "^1.4.5-lts.1",
+    "pino": "^8.17.2",
     "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
-    "sql.js": "^1.13.0"
+    "sql.js": "^1.11.0"
   },
   "engines": {
-    "node": ">=16"
+    "node": "18.x"
   },
   "license": "MIT"
 }

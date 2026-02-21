@@ -1,0 +1,16 @@
+version: 1
+apps:
+  - name: whatsapp-backend
+    type: dockerfile
+    dockerfilePath: ./Dockerfile
+    buildContext: .
+    envs:
+      - key: PORT
+        value: "3001"
+      - key: NODE_ENV
+        value: "production"
+    ports:
+      - published: 3001
+        target: 3001
+        protocol: tcp
+    description: "Node backend for whatsapp_automation_baileys"
